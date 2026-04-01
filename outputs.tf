@@ -1,7 +1,9 @@
-output "ubuntu_ips" {
-  value = aws_instance.ubuntu_ec2[*].public_ip
+output "ec2_public_ip" {
+  description = "Public IP of the EC2 instance"
+  value       = aws_instance.myserver.public_ip
 }
-
-output "amazon_ips" {
-  value = aws_instance.amazon_ec2[*].public_ip
+ 
+output "instance_id" {
+  description = "EC2 instance ID"
+  value       = aws_instance.myserver.id
 }

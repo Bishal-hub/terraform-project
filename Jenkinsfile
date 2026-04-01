@@ -42,7 +42,7 @@ pipeline {
 
             steps {
 
-                bat "terraform plan -var='instance_type=${params.INSTANCE_TYPE}'"
+                bat "terraform plan -var='instance_type=${params.INSTANCE_TYPE}"
 
             }
 
@@ -64,7 +64,7 @@ pipeline {
 
                 passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
  
-                    bat "terraform apply -auto-approve -var='instance_type=${params.INSTANCE_TYPE}'"
+                    bat "terraform apply -auto-approve -var='instance_type=${params.INSTANCE_TYPE}"
 
                 }
 

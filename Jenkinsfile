@@ -22,7 +22,7 @@ pipeline {
 
             steps {
 
-                git branch: 'main', url: 'https://github.com/DevopsPractice95/Terraform-Ec2.git'
+                git branch: 'main', url: 'https://github.com/Bishal-hub/terraform-project.git'
 
             }
 

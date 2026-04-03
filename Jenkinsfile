@@ -2,20 +2,23 @@ pipeline {
     agent any
 
     parameters {
-        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Choose whether to create or delete the infrastructure')
+        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Choose Action')
         string(name: 'INSTANCE_TYPE', defaultValue: 't3.micro', description: 'EC2 Instance Type')
     }
 
     environment {
         AWS_DEFAULT_REGION = 'ap-south-1'
-        // This makes credentials available to all stages automatically
         AWS_CREDENTIALS = credentials('aws-creds')
+        // Use your GitHub credentials ID here to allow pushing state back
+        GIT_AUTH = credentials('github-creds') 
     }
 
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Bishal-hub/terraform-project.git'
+                // Wipe the workspace to ensure we start clean with the latest state from Git
+                cleanWs()
+                git branch: 'main', credentialsId: 'github-creds', url: 'https://github.com/Bishal-hub/terraform-project.git'
             }
         }
 
@@ -25,41 +28,31 @@ pipeline {
             }
         }
 
-        // --- APPLY LOGIC ---
-        stage('Terraform Plan (Apply)') {
-            when { expression { params.ACTION == 'apply' } }
+        stage('Terraform Action') {
             steps {
-                sh "terraform plan -var='instance_type=${params.INSTANCE_TYPE}'"
+                script {
+                    if (params.ACTION == 'apply') {
+                        sh "terraform apply -auto-approve -var='instance_type=${params.INSTANCE_TYPE}'"
+                        sh "terraform output"
+                    } else {
+                        sh "terraform destroy -auto-approve -var='instance_type=${params.INSTANCE_TYPE}'"
+                    }
+                }
             }
         }
 
-        stage('Terraform Apply') {
-            when { expression { params.ACTION == 'apply' } }
+        stage('Push State to Git') {
             steps {
-                sh "terraform apply -auto-approve -var='instance_type=${params.INSTANCE_TYPE}'"
-            }
-        }
-
-        // --- DESTROY LOGIC ---
-        stage('Terraform Plan (Destroy)') {
-            when { expression { params.ACTION == 'destroy' } }
-            steps {
-                sh "terraform plan -destroy -var='instance_type=${params.INSTANCE_TYPE}'"
-            }
-        }
-
-        stage('Terraform Destroy') {
-            when { expression { params.ACTION == 'destroy' } }
-            steps {
-                sh "terraform destroy -auto-approve -var='instance_type=${params.INSTANCE_TYPE}'"
-            }
-        }
-
-        // --- FINAL STATUS ---
-        stage('Show Outputs') {
-            when { expression { params.ACTION == 'apply' } }
-            steps {
-                sh 'terraform output'
+                script {
+                    // This stage saves your local state back to GitHub so "Destroy" works later
+                    sh """
+                        git config user.email "jenkins@example.com"
+                        git config user.name "Jenkins CI"
+                        git add terraform.tfstate
+                        git commit -m "Update terraform state after ${params.ACTION} [skip ci]" || echo "No changes to state"
+                        git push https://${GIT_AUTH_USR}:${GIT_AUTH_PSW}@github.com/Bishal-hub/terraform-project.git main
+                    """
+                }
             }
         }
     }

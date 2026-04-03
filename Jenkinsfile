@@ -49,51 +49,21 @@ pipeline {
         }
  
         stage('Terraform Apply') {
-
-            when {
-
-                expression { params.ACTION == 'apply' }
-
+            environment {
+            AWS_CREDENTIALS = credentials('aws-creds')
             }
-
             steps {
-
-                withCredentials([usernamePassword(credentialsId: 'aws-creds',
-
-                usernameVariable: 'AWS_ACCESS_KEY_ID',
-
-                passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
- 
-                    sh "terraform apply -auto-approve -var='instance_type=${params.INSTANCE_TYPE}'"
-
-                }
-
+            sh 'terraform apply -auto-approve -var=instance_type=t3.micro'
             }
-
         }
  
         stage('Terraform Destroy') {
-
-            when {
-
-                expression { params.ACTION == 'destroy' }
-
+            environment {
+            AWS_CREDENTIALS = credentials('aws-creds')
             }
-
             steps {
-
-                withCredentials([usernamePassword(credentialsId: 'aws-creds',
-
-                usernameVariable: 'AWS_ACCESS_KEY_ID',
-
-                passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
- 
-                    sh 'terraform destroy -auto-approve'
-
-                }
-
+            sh 'terraform destroy -auto-approve -var=instance_type=t3.micro'
             }
-
         }
  
         stage('Show Outputs') {

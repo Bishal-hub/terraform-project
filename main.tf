@@ -7,6 +7,6 @@ resource "aws_instance" "myserver" {
   instance_type = "t3.micro"
  
   tags = {
-    Name = "terraform-ec2"
+    Name = "terraform-ec2-bishal"
   }
 }

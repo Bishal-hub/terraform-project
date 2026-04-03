@@ -56,6 +56,12 @@ pipeline {
             sh 'terraform apply -auto-approve -var=instance_type=t3.micro'
             }
         }
+
+        stage('Approve Destruction?') {
+            steps {
+            input message: 'Do you want to destroy the infrastructure?'
+            }
+        }
  
         stage('Terraform Destroy') {
             environment {

@@ -37,11 +37,11 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
+      - name: Terraform Init (with backend)
         run: terraform init
 
       - name: Terraform Plan
-        run: terraform plan
+        run: terraform plan -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.ACTION == 'apply' }}
@@ -49,8 +49,15 @@ jobs:
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.ACTION == 'destroy' }}
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
 
       - name: Show Terraform Outputs
         if: github.event.inputs.ACTION == 'apply'
         run: terraform output
+
+      - name: Cleanup Workspace
+        if: always()
+        run: |
+          echo "Cleaning up workspace..."
+          rm -rf *
+          echo "Workspace cleaned successfully ✅"

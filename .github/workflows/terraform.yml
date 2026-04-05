@@ -43,13 +43,13 @@ jobs:
       - name: Terraform Plan
         run: terraform plan
 
-      - name: Terraform Apply / Destroy
-        run: |
-          if [ "${{ github.event.inputs.ACTION }}" = "apply" ]; then
-            terraform apply -auto-approve -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
-          else
-            terraform destroy -auto-approve -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
-          fi
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.ACTION == 'apply' }}
+        run: terraform apply -auto-approve -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.ACTION == 'destroy' }}
+        run: terraform destroy -auto-approve
 
       - name: Show Terraform Outputs
         if: github.event.inputs.ACTION == 'apply'

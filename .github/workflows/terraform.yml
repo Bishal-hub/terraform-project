@@ -1,0 +1,53 @@
+name: Terraform CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      ACTION:
+        description: "Choose Action"
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
+      INSTANCE_TYPE:
+        description: "EC2 Instance Type"
+        required: true
+        default: "t3.micro"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    env:
+      AWS_DEFAULT_REGION: ap-south-1
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          region: ap-south-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Apply / Destroy
+        run: |
+          if [ "${{ github.event.inputs.ACTION }}" = "apply" ]; then
+            terraform apply -auto-approve -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
+          else
+            terraform destroy -auto-approve -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}"
+          fi
+
+      - name: Show Terraform Outputs
+        if: github.event.inputs.ACTION == 'apply'
+        run: terraform output

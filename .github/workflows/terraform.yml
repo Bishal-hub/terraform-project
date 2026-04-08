@@ -58,13 +58,15 @@ jobs:
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.ACTION == 'apply' }} # Run only if apply selected
-        run: terraform apply -auto-approve \
+        run: |
+          terraform apply -auto-approve \
           -var="stage=${{ github.event.inputs.STAGE }}" \
           -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}" # Create resources
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.ACTION == 'destroy' }} # Run only if destroy selected
-        run: terraform destroy -auto-approve \
+        run: |
+          terraform destroy -auto-approve \
           -var="stage=${{ github.event.inputs.STAGE }}" \
           -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}" # Destroy resources
 

@@ -56,11 +56,6 @@ jobs:
         run: terraform output
         working-directory: terraform-s3
 
-      - name: Show Outputs
-        if: github.event.inputs.ACTION == 'destroy'
-        run: terraform output
-        working-directory: terraform-s3
-
       - name: Cleanup Workspace
         if: always()
         run: |

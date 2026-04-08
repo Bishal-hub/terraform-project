@@ -9,12 +9,12 @@ terraform {
 
 resource "aws_s3_bucket" "mybucket" {
   bucket = "bishal-terraform-s3-practice-bucket" # must be globally unique
+  force_destroy = true          # to delete unempty bucket successfully and forcefully 
 
   tags = {
     Name        = "bishal-s3-bucket-practice"
     Environment = "Dev"
   }
-  force_destroy = true          # to delete unempty bucket successfully and forcefully 
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {

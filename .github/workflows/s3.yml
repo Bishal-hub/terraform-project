@@ -1,4 +1,4 @@
-name: S3 Terraform CI/CD
+name: S3 CI/CD
 
 on:
   workflow_dispatch:

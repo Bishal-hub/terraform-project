@@ -14,6 +14,7 @@ resource "aws_s3_bucket" "mybucket" {
     Name        = "bishal-s3-bucket-practice"
     Environment = "Dev"
   }
+  force_destroy = true          # to delete unempty bucket successfully and forcefully 
 }
 
 resource "aws_s3_bucket_versioning" "versioning" {

@@ -35,21 +35,26 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: terraform-s3
 
       - name: Terraform Plan
         run: terraform plan
+        working-directory: terraform-s3
 
       - name: Terraform Apply
         if: ${{ github.event.inputs.ACTION == 'apply' }}
         run: terraform apply -auto-approve
+        working-directory: terraform-s3
 
       - name: Terraform Destroy
         if: ${{ github.event.inputs.ACTION == 'destroy' }}
         run: terraform destroy -auto-approve
+        working-directory: terraform-s3
 
       - name: Show Outputs
         if: github.event.inputs.ACTION == 'apply'
         run: terraform output
+        working-directory: terraform-s3
 
       - name: Cleanup Workspace
         if: always()

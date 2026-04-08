@@ -7,3 +7,8 @@ output "instance_id" {
   description = "EC2 instance ID"
   value       = aws_instance.myserver.id
 }
+
+output "aws_s3_bucket" {
+  description = "Created s3 bucket name"
+  value       = aws_s3_bucket.mybucket.bucket
+}

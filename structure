@@ -1,0 +1,12 @@
+terraform-project/
+│
+├── backend.tf              # Remote state config
+├── provider.tf             # AWS provider
+├── variables.tf            # All inputs
+├── main.tf                 # Logic controller
+├── ec2.tf                  # EC2 resource
+├── s3.tf                   # S3 resource
+├── outputs.tf              # Outputs
+│
+└── .github/workflows/
+    └── terraform.yml       # GitHub Actions pipeline

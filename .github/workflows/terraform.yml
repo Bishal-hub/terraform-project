@@ -1,0 +1,77 @@
+name: Terraform Infrastructure # Workflow name
+
+on:
+  workflow_dispatch: # Manual trigger
+    inputs:
+      STAGE:
+        description: "Select Infrastructure Stage" # Dropdown label
+        required: true
+        default: "ec2"
+        type: choice
+        options:
+          - ec2 # Create EC2 only
+          - s3 # Create S3 only
+          - all # Create both
+
+      ACTION:
+        description: "Terraform Action" # Apply or Destroy
+        required: true
+        default: "apply"
+        type: choice
+        options:
+          - apply
+          - destroy
+
+      INSTANCE_TYPE:
+        description: "EC2 Instance Type" # Input for EC2 size
+        required: false
+        default: "t3.micro"
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest # Use Ubuntu runner
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4 # Pull repository code
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }} # AWS access key
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # AWS secret key
+          aws-region: ap-south-1 # AWS region
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3 # Install Terraform CLI
+
+      - name: Terraform Init
+        run: terraform init # Initialize backend and providers
+
+      - name: Terraform Plan
+        run: terraform plan \
+          -var="stage=${{ github.event.inputs.STAGE }}" \
+          -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}" # Preview changes
+
+      - name: Terraform Apply
+        if: ${{ github.event.inputs.ACTION == 'apply' }} # Run only if apply selected
+        run: terraform apply -auto-approve \
+          -var="stage=${{ github.event.inputs.STAGE }}" \
+          -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}" # Create resources
+
+      - name: Terraform Destroy
+        if: ${{ github.event.inputs.ACTION == 'destroy' }} # Run only if destroy selected
+        run: terraform destroy -auto-approve \
+          -var="stage=${{ github.event.inputs.STAGE }}" \
+          -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}" # Destroy resources
+
+      - name: Show Outputs
+        if: github.event.inputs.ACTION == 'apply' # Show output only after apply
+        run: terraform output # Print outputs
+
+      - name: Cleanup Workspace
+        if: always() # Run always
+        run: |
+          echo "Cleaning workspace..."   # Print message
+          rm -rf *                      # Delete all files
+          echo "Workspace cleaned ✅"   # Confirmation

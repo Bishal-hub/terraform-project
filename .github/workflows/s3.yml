@@ -1,4 +1,4 @@
-name: S3 CI/CD
+name: S3 Creation CI/CD
 
 on:
   workflow_dispatch:
@@ -53,6 +53,11 @@ jobs:
 
       - name: Show Outputs
         if: github.event.inputs.ACTION == 'apply'
+        run: terraform output
+        working-directory: terraform-s3
+
+      - name: Show Outputs
+        if: github.event.inputs.ACTION == 'destroy'
         run: terraform output
         working-directory: terraform-s3
 

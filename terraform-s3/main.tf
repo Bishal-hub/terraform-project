@@ -8,7 +8,7 @@ terraform {
 }
 
 resource "aws_s3_bucket" "mybucket" {
-  bucket = "bishal-terraform-s3-practice-bucket" # must be globally unique
+  bucket = "demo-bucket-s3-bishal" # must be globally unique
   force_destroy = true          # to delete unempty bucket successfully and forcefully 
 
   tags = {

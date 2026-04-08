@@ -51,7 +51,8 @@ jobs:
         run: terraform validate # Check configuration syntax
 
       - name: Terraform Plan
-        run: terraform plan \
+        run: |
+          terraform plan \
           -var="stage=${{ github.event.inputs.STAGE }}" \
           -var="instance_type=${{ github.event.inputs.INSTANCE_TYPE }}" # Preview changes
 

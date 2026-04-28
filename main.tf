@@ -1,7 +1,7 @@
 module "ec2" {
   source = "./modules/ec2"      # Path to EC2 module
 
-  count = var.stage == "ec2" || var.stage == "all" ? 1 : 0  # Create EC2 only if selected
+  count = var.stage == "ec2" || var.stage == "all" ? 4 : 0  # Create EC2 only if selected
 
   ami           = var.ami       # Passing AMI variable
   instance_type = var.instance_type  # Passing instance type

@@ -1,8 +1,13 @@
-terraform {
-  backend "s3" {
-    bucket         = "terraform-state-s3-bishal-bucket"   # S3 bucket to store state file
-    key            = "terraform-project/terraform.tfstate" # Path inside bucket
-    region         = "ap-south-1"                 # AWS region (Mumbai)
-    dynamodb_table = "terraform-lock-table-bishal"       # Table for state locking
+terraform {                                                         # Terraform configuration block
+
+  backend "s3" {                                                    # Store Terraform state in S3
+
+    bucket         = "terraform-state-s3-bishal-bucket"             # S3 bucket name
+
+    key            = "terraform-project/terraform.tfstate"          # State file path
+
+    region         = "ap-south-1"                                   # AWS region
+
+    dynamodb_table = "terraform-lock-table-bishal"                  # DynamoDB table for state locking
   }
 }

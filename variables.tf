@@ -1,19 +1,20 @@
-variable "stage" {
-  description = "Which resource to create (ec2, s3, all)"  # Controls module execution
+variable "stage" {                                                  # Resource selection variable
+
+  description = "Select resource type"                              # Variable description
+
+  type = string                                                     # Variable datatype
 }
 
-variable "ami" {
-  description = "AMI ID for EC2 instance"   # Explains purpose
+variable "instance_type" {                                          # EC2 instance type variable
+
+  description = "EC2 instance type"                                 # Variable description
+
+  type = string                                                     # Variable datatype
 }
 
-variable "instance_type" {
-  description = "Type of EC2 instance"     # Example: t2.micro
-}
+variable "bucket_name" {                                            # S3 bucket name variable
 
-variable "key_name" {
-  description = "SSH key name"             # Key pair for EC2 login
-}
+  description = "S3 bucket name"                                    # Variable description
 
-variable "bucket_name" {
-  description = "S3 bucket name"           # Must be globally unique
+  type = string                                                     # Variable datatype
 }

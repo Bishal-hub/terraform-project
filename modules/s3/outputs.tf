@@ -1,3 +1,4 @@
-output "bucket_id" {
-  value = aws_s3_bucket.this.id   # Bucket ID output
+output "bucket_name" {                                              # S3 bucket output
+
+  value = aws_s3_bucket.mys3.bucket                                 # Fetch bucket name
 }

@@ -1,7 +1,9 @@
-resource "aws_s3_bucket" "this" {
-  bucket = var.bucket_name   # Bucket name
+resource "aws_s3_bucket" "mys3" {                                   # S3 bucket resource
 
-  tags = {
-    Name = var.bucket_name   # Tag
+  bucket = var.bucket_name                                          # Bucket name from variable
+
+  tags = {                                                          # Resource tags
+
+    Name = "bishal-s3"                                              # S3 bucket tag
   }
 }

@@ -1,4 +1,5 @@
-ami           = "ami-0f5ee92e2d63afc18"  # Example Amazon Linux AMI
-instance_type = "t2.micro"               # Free-tier eligible instance
-key_name      = "my-keypair"             # Replace with your key
-bucket_name   = "bishal-terraform-bucket-123"  # Unique bucket name
+stage = "all"                                                       # Default resource selection
+
+instance_type = "t2.micro"                                          # Default EC2 instance type
+
+bucket_name = "bishal-demo-bucket-2026"                             # Default S3 bucket name

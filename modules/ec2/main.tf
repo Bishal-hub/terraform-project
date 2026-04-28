@@ -1,9 +1,11 @@
-resource "aws_instance" "this" {
-  ami           = var.ami            # AMI ID
-  instance_type = var.instance_type  # Instance type
-  key_name      = var.key_name       # SSH key
+resource "aws_instance" "myec2" {                                   # EC2 resource
 
-  tags = {
-    Name = var.name                 # Tag for EC2
+  ami = "ami-0f918f7e67a3323f0"                                     # Amazon Linux 2 AMI
+
+  instance_type = var.instance_type                                 # EC2 instance type
+
+  tags = {                                                          # Resource tags
+
+    Name = "bishal-ec2"                                             # EC2 instance name
   }
 }

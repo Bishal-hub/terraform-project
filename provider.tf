@@ -1,3 +1,4 @@
-provider "aws" {
-  region = "ap-south-1"   # AWS region where resources will be created
+provider "aws" {                                                    # AWS provider block
+
+  region = "ap-south-1"                                             # AWS region
 }

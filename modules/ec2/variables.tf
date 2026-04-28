@@ -1,15 +1,6 @@
-variable "ami" {
-  description = "AMI ID"
-}
+variable "instance_type" {                                          # EC2 instance type variable
 
-variable "instance_type" {
-  description = "Instance type"
-}
+  description = "EC2 instance type"                                 # Variable description
 
-variable "key_name" {
-  description = "SSH key name"
-}
-
-variable "name" {
-  description = "EC2 name tag"
+  type = string                                                     # Variable datatype
 }

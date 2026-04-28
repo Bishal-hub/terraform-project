@@ -1,3 +1,3 @@
 provider "aws" {
-  region = var.aws_region   # Use region from variables.tf
+  region = "ap-south-1"   # AWS region where resources will be created
 }

@@ -1,12 +1,23 @@
 terraform-project/
 │
-├── backend.tf              # Remote state config
-├── provider.tf             # AWS provider
-├── variables.tf            # All inputs
-├── main.tf                 # Logic controller
-├── ec2.tf                  # EC2 resource
-├── s3.tf                   # S3 resource
-├── outputs.tf              # Outputs
+├── backend.tf              # Stores Terraform state remotely in S3
+├── provider.tf             # Defines AWS provider and region
+├── variables.tf            # All input variables used in project
+├── terraform.tfvars        # Actual values for variables
+├── main.tf                 # Calls modules (acts as controller)
+├── outputs.tf              # Final outputs from modules
+│
+├── modules/                # Reusable infrastructure code
+│   │
+│   ├── ec2/                # EC2 module
+│   │   ├── main.tf         # EC2 resource definition
+│   │   ├── variables.tf    # EC2 inputs
+│   │   ├── outputs.tf      # EC2 outputs
+│   │
+│   └── s3/                 # S3 module
+│       ├── main.tf         # S3 resource definition
+│       ├── variables.tf    # S3 inputs
+│       ├── outputs.tf      # S3 outputs
 │
 └── .github/workflows/
-    └── terraform.yml       # GitHub Actions pipeline
+    └── terraform.yml       # CI/CD pipeline using GitHub Actions

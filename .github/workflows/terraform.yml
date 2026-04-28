@@ -1,78 +1,74 @@
-name: Terraform Infra
+name: Terraform Infra                            # Name of GitHub Actions workflow
 
-on:
-  workflow_dispatch:
-    inputs:
-      stage:
-        description: "Select Resource"
-        required: true
-        default: "all"
-        type: choice
-        options:
-          - ec2
-          - s3
-          - all
-      action:
-        description: "Select Action"
-        required: true
-        default: "apply"
-        type: choice
-        options:
-          - apply
-          - destroy
+on:                                              # Trigger definitions for this workflow
+  workflow_dispatch:                               # Manual workflow dispatch trigger
+    inputs:                                        # Workflow input variables
+      stage:                                       # Resource selection input
+        description: "Select Resource"            # Label shown in GitHub UI
+        required: true                             # Input is required to proceed
+        default: "all"                           # Default selected option
+        type: choice                               # Use dropdown choice input
+        options:                                   # Available stage options
+          - ec2                                    # Deploy only the EC2 module
+          - s3                                     # Deploy only the S3 module
+          - all                                    # Deploy all modules
+      action:                                      # Action selection input
+        description: "Select Action"              # Label shown in GitHub UI
+        required: true                             # Input is required to proceed
+        default: "apply"                         # Default selected action
+        type: choice                               # Use dropdown choice input
+        options:                                   # Available action options
+          - apply                                  # Create or update infrastructure
+          - destroy                                # Destroy infrastructure
 
-jobs:
-  terraform:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ap-south-1
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform init
-        run: terraform init
-
-      - name: Terraform plan
-        run: |
-          if [ "${{ github.event.inputs.stage }}" = "ec2" ]; then
-            terraform plan -target=module.ec2
-          elif [ "${{ github.event.inputs.stage }}" = "s3" ]; then
-            terraform plan -target=module.s3
-          else
-            terraform plan
-          fi
-
-      - name: Terraform apply
-        if: ${{ github.event.inputs.action == 'apply' }}
-        run: |
-          if [ "${{ github.event.inputs.stage }}" = "ec2" ]; then
-            terraform apply -auto-approve -target=module.ec2
-          elif [ "${{ github.event.inputs.stage }}" = "s3" ]; then
-            terraform apply -auto-approve -target=module.s3
-          else
-            terraform apply -auto-approve
-          fi
-
-      - name: Terraform destroy
-        if: ${{ github.event.inputs.action == 'destroy' }}
-        run: |
-          if [ "${{ github.event.inputs.stage }}" = "ec2" ]; then
-            terraform destroy -auto-approve -target=module.ec2
-          elif [ "${{ github.event.inputs.stage }}" = "s3" ]; then
-            terraform destroy -auto-approve -target=module.s3
-          else
-            terraform destroy -auto-approve
-          fi
-
-      - name: Show Terraform outputs
-        run: terraform output
+jobs:                                            # Job definitions
+  terraform:                                     # Terraform workflow job
+    runs-on: ubuntu-latest                       # Use Ubuntu runner for the job
+    steps:                                       # Steps executed in this job
+      - name: Checkout Code                      # Checkout repository code into runner
+        uses: actions/checkout@v4                # GitHub checkout action
+      - name: Configure AWS                      # Configure AWS credentials for Terraform
+        uses: aws-actions/configure-aws-credentials@v4   # AWS credentials action
+        with:                                     # AWS credential values
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}       # AWS access key from secrets
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}   # AWS secret access key from secrets
+          aws-region: ap-south-1                 # AWS deployment region
+      - name: Setup Terraform                    # Install Terraform on the runner
+        uses: hashicorp/setup-terraform@v3       # Official Terraform setup action
+      - name: Terraform Init                     # Initialize Terraform working directory
+        run: terraform init                     # Download providers and configure backend
+      - name: Terraform Format                   # Format Terraform files before validation
+        run: terraform fmt -recursive           # Ensure consistent Terraform formatting
+      - name: Terraform Validate                 # Validate Terraform configuration files
+        run: terraform validate                 # Ensure Terraform code is syntactically valid
+      - name: Terraform Plan                     # Generate Terraform plan for selected resources
+        run: |                                  # Multi-line shell script follows
+          if [ "${{ github.event.inputs.stage }}" = "ec2" ]; then     # If EC2 selected
+            terraform plan -target=module.ec2   # Plan only EC2 module
+          elif [ "${{ github.event.inputs.stage }}" = "s3" ]; then   # If S3 selected
+            terraform plan -target=module.s3   # Plan only S3 module
+          else                                         # If all selected
+            terraform plan                         # Plan the full infrastructure
+          fi                                       # End plan selection conditional
+      - name: Terraform Apply                    # Apply Terraform changes when requested
+        if: ${{ github.event.inputs.action == 'apply' }}   # Execute only for apply action
+        run: |                                  # Multi-line shell script follows
+          if [ "${{ github.event.inputs.stage }}" = "ec2" ]; then     # If EC2 selected
+            terraform apply -auto-approve -target=module.ec2   # Apply only EC2 module
+          elif [ "${{ github.event.inputs.stage }}" = "s3" ]; then   # If S3 selected
+            terraform apply -auto-approve -target=module.s3   # Apply only S3 module
+          else                                         # If all selected
+            terraform apply -auto-approve            # Apply full infrastructure
+          fi                                       # End apply selection conditional
+      - name: Terraform Destroy                  # Destroy Terraform-managed resources when requested
+        if: ${{ github.event.inputs.action == 'destroy' }}   # Execute only for destroy action
+        run: |                                  # Multi-line shell script follows
+          if [ "${{ github.event.inputs.stage }}" = "ec2" ]; then     # If EC2 selected
+            terraform destroy -auto-approve -target=module.ec2   # Destroy only EC2 module
+          elif [ "${{ github.event.inputs.stage }}" = "s3" ]; then   # If S3 selected
+            terraform destroy -auto-approve -target=module.s3   # Destroy only S3 module
+          else                                         # If all selected
+            terraform destroy -auto-approve           # Destroy full infrastructure
+          fi                                       # End destroy selection conditional
+      - name: Show Output                         # Display Terraform outputs after execution
+        run: terraform output                  # Print outputs from current Terraform state
